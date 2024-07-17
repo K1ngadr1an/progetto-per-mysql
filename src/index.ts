@@ -25,7 +25,10 @@ app.get(
 app.post("/posts/create", async (req: Request, res: Response) => {
   const query = "INSERT INTO posts (title, content) VALUES ($1, $2)";
   const values = [req.body.title, req.body.content];
-  const posts = await client.query(query, values);
+  await client.query(query, values);
+  const database = "SELECT * FROM posts";
+  const result = await client.query(database);
+  res.status(201).json(result.rows);
 });
 
 app.put("/posts/:idPost", function (request: Request, response: Response) {
