@@ -2,10 +2,10 @@ GET http://localhost:3000/posts
 
 ###
 
-POST http://localhost:3000/posts
+POST http://localhost:3000/posts/create
  Content-Type: application/json
  
  {
-    "title" : "a caso"
+    "title" : "a caso",
     "content": "qualsiasi"
  }

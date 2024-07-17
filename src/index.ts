@@ -9,39 +9,37 @@ const port = 3000;
 const server = express.json();
 app.use(server);
 
-app.get("/posts", async function (request: Request, response: Response) {
-  await client.connect();
-  const res = await client.query("SELECT * FROM posts");
-  response.status(201).json(res.rows);
+app.get("/posts", function (request: Request, response: Response) {
+  response.status(200).json([]);
 });
 
-app.get("/posts/:idPost", function (request: Request, response: Response) {
-  response.status(200).json({ id: request.params.idPost });
-});
-app.post("/posts", function (request: Request, response: Response) {
-  const resp = client.query(
-    `INSERT INTO posts (title, content) VALUES ('${request.body.title}', '${request.body.content}')`
-  );
-  response.status(200).json({});
+app.get(
+  "/posts/:idPost",
+  async function (request: Request, response: Response) {
+    await client.connect();
+    const res = await client.query("SELECT * FROM posts");
+    response.status(201).json(res.rows);
+  }
+);
+
+app.post("/posts/create", async (req: Request, res: Response) => {
+  const query = "INSERT INTO posts (title, content) VALUES ($1, $2)";
+  const values = [req.body.title, req.body.content];
+  const posts = await client.query(query, values);
 });
 
 app.put("/posts/:idPost", function (request: Request, response: Response) {
-const resp = client.query(
-    
-)
+  return response.status(200).json({
+    id: request.body.id,
+    title: request.body.title,
+    content: request.body.content,
   });
 });
-
-app.delete(
-  "/posts/idpost",
-  async function (request: Request, response: Response) {
-    await client.connect();
-    const res = await client.query(
-      `DELETE FROM posts WHERE id =${request.body.id} `
-    );
-    response.status(201).json({ message: ` delete ${res.rows}` });
-  }
-);
+app.delete("/posts/:idpost", function (request: Request, response: Response) {
+  return response.status(200).json({
+    message: `Post ${request.params.idPost} deleted`,
+  });
+});
 
 app.listen(port, function () {
   console.log(`server is running on http://localhost:${port}`);
